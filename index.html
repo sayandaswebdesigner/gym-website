@@ -189,7 +189,7 @@
                 <span>with your email for registration</span>
                 <input type="text" id="signup-username" placeholder="Username" required />
                 <input type="password" id="signup-password" placeholder="Password" required />
-                <select-name id="signup-plan">
+               <select id="signup-plan" title="Choose your gym plan">
                     <option value="free">Free Tier ($0/mo)</option>
                     <option value="pro">Pro Membership ($50/mo)</option>
                 </select>
@@ -245,7 +245,7 @@
 // 2. Backend Connection Logic
         async function authenticateUser(endpoint, user, pass) {
             try {
-                const response = await fetch(`http://localhost:3000${endpoint}`, {
+                const response = await fetch(`https://gym-website-29il.onrender.com${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: user, password: pass })
@@ -280,7 +280,7 @@
             const plan = document.getElementById('signup-plan').value; // Get the chosen plan
             
             // We need a slightly different fetch call just for sign up now so we can send the plan
-            fetch('http://localhost:3000/signup', {
+            fetch('https://gym-website-29il.onrender.com/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: user, password: pass, plan: plan }) // Send plan to backend
