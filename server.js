@@ -36,6 +36,10 @@ function saveUsers(users) {
     }
 }
 
+app.get('/', (req, res) => {
+  res.send('Gym Server is running!');
+});
+
 // ... Leave your signup, login, and stats routes exactly the same below ...
 
 // --- SIGN UP ROUTE ---
@@ -61,7 +65,7 @@ app.post('/signup', (req, res) => {
     
     res.status(201).json({ message: "Sign up successful! You can now log in." });
 });
-
+‹
 // --- LOGIN ROUTE ---
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
