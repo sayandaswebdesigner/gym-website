@@ -65,7 +65,7 @@ app.post('/signup', (req, res) => {
     
     res.status(201).json({ message: "Sign up successful! You can now log in." });
 });
-‹
+
 // --- LOGIN ROUTE ---
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
