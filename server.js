@@ -4,9 +4,8 @@ const fs = require('fs');
 const path = require('path'); // NEW: Add this core utility
 const app = express();
 
-app.use(express.json());
 app.use(cors());
-
+app.use(express.json());
 // FIXED: This guarantees the file saves directly next to server.js, no matter where you run it from
 const DATA_FILE = path.join(__dirname, 'users.json');
 
