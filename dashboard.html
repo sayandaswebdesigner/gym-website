@@ -260,7 +260,7 @@
         // 1. Fetch Real-Time Data from Server
         async function loadDashboardData() {
             try {
-            const response = await fetch(`https://gym-website-29il.onrender.com/api/stats?timeframe=${currentFilter}`);
+           const response = await fetch('https://gym-website-29il.onrender.com/api/stats');
                 const data = await response.json();
 
                 // Inject the numbers into the stat cards
