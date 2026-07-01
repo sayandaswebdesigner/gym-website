@@ -126,3 +126,12 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Gym Server running globally on port ${PORT}`);
 });
+// --- GET ALL REGISTERED USERS ---
+app.get('/api/all-users', (req, res) => {
+    try {
+        const users = getUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to load user directory" });
+    }
+});

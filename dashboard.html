@@ -165,9 +165,10 @@
             <li><i class="fas fa-users"></i> Members</li>
             <li><i class="fas fa-bell"></i> Notifications</li>
             <li><i class="fas fa-cog"></i> Settings</li>
-        </ul>
-        <li id="tab-dashboard" class="active" onclick="switchView('overview-view', 'tab-dashboard')" style="cursor: pointer;"><i class="fas fa-home"></i> Dashboard</li>
+            <li id="tab-dashboard" class="active" onclick="switchView('overview-view', 'tab-dashboard')" style="cursor: pointer;"><i class="fas fa-home"></i> Dashboard</li>
 <li id="tab-members" onclick="switchView('members-view', 'tab-members')" style="cursor: pointer;"><i class="fas fa-users"></i> Members</li>
+        </ul>
+        
         <div class="logout-btn" onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> Log Out
         </div>
@@ -387,6 +388,48 @@ async function loadAllMembers() {
         function logout() {
             window.location.href = 'index.html';
         }
+        //  4. Switches screens when clicking the sidebar tabs
+function switchView(viewId, tabId) {
+    document.getElementById('overview-view').style.display = 'none';
+    document.getElementById('members-view').style.display = 'none';
+    
+    document.getElementById(viewId).style.display = 'block';
+    
+    document.querySelectorAll('.sidebar-menu li').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.getElementById(tabId).classList.add('active');
+    
+    if (viewId === 'members-view') {
+        loadAllMembers();
+    }
+}
+
+// Fetches every registered user from your server database
+async function loadAllMembers() {
+    try {
+        const response = await fetch('https://gym-website-29il.onrender.com/api/all-users');
+        const users = await response.json();
+        
+        const tableBody = document.getElementById('all-members-table-body');
+        tableBody.innerHTML = ''; 
+        
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid #eee';
+            const planName = user.plan === 'pro' ? 'Pro Membership ($50)' : 'Free Tier ($0)';
+            
+            row.innerHTML = `
+                <td style="padding: 12px; font-weight: 500; color: #333;">${user.username}</td>
+                <td style="padding: 12px; color: #666;">${planName}</td>
+                <td style="padding: 12px;"><span style="background: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Active</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error loading member directory:", error);
+    }
+}
     </script>
 </body>
 </html>
