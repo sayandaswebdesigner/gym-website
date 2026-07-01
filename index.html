@@ -245,7 +245,7 @@
 // 2. Backend Connection Logic
         async function authenticateUser(endpoint, user, pass) {
             try {
-                const response = await fetch(`https://gym-website-29il.onrender.com${endpoint}`, {
+               const response = await fetch(`https://gym-website-29il.onrender.com/${endpoint}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: user, password: pass })
