@@ -161,12 +161,10 @@
             GYM PRO
         </div>
         <ul class="sidebar-menu">
-            <li class="active"><i class="fas fa-home"></i> Dashboard</li>
-            <li><i class="fas fa-users"></i> Members</li>
-            <li><i class="fas fa-bell"></i> Notifications</li>
-            <li><i class="fas fa-cog"></i> Settings</li>
-            <li id="tab-dashboard" class="active" onclick="switchView('overview-view', 'tab-dashboard')" style="cursor: pointer;"><i class="fas fa-home"></i> Dashboard</li>
+             <li id="tab-dashboard" class="active" onclick="switchView('overview-view', 'tab-dashboard')" style="cursor: pointer;"><i class="fas fa-home"></i> Dashboard</li>
 <li id="tab-members" onclick="switchView('members-view', 'tab-members')" style="cursor: pointer;"><i class="fas fa-users"></i> Members</li>
+            <li><i class="fas fa-bell"></i> Notifications</li>
+            <li><i class="fas fa-cog"></i> Settings</li>           
         </ul>
         
         <div class="logout-btn" onclick="logout()">
@@ -180,7 +178,7 @@
                 <i class="fas fa-user-circle"></i> Owner Admin
             </div>
         </header>
-        <div id="overview-view" class="view-section"></div>
+        <div id="overview-view" class="view-section">
 <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h2 style="margin: 0; font-size: 24px; color: #333;">Overview</h2>
     <div class="filter-buttons">
@@ -240,23 +238,25 @@
             </div>
         </div>
     </div>
-    </div> <div id="members-view" class="view-section" style="display: none; padding: 20px;">
-        <h2 style="margin-bottom: 20px; color: #333;">All Registered Members</h2>
-        <div style="background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    </div> <!-- Members List View Section -->
+    <div id="members-view" class="view-section" style="display: none; padding: 30px; max-width: 1000px; margin: 0 auto;">
+        <h2 style="margin-bottom: 25px; color: #333; font-size: 24px;">All Registered Members</h2>
+        <div style="background: #fff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); width: 100%;">
             <table style="width: 100%; border-collapse: collapse; text-align: left;">
                 <thead>
-                    <tr style="border-bottom: 2px solid #eee;">
-                        <th style="padding: 12px; color: #666;">Username</th>
-                        <th style="padding: 12px; color: #666;">Selected Plan</th>
-                        <th style="padding: 12px; color: #666;">Status</th>
+                    <tr style="border-bottom: 2px solid #edf2f7; height: 45px;">
+                        <th style="padding: 12px; color: #4a5568; font-weight: 600;">Username</th>
+                        <th style="padding: 12px; color: #4a5568; font-weight: 600;">Selected Plan</th>
+                        <th style="padding: 12px; color: #4a5568; font-weight: 600;">Sign Up Date</th>
+                        <th style="padding: 12px; color: #4a5568; font-weight: 600;">Status</th>
                     </tr>
                 </thead>
                 <tbody id="all-members-table-body">
-                    </tbody>
+                    <!-- JavaScript will inject data rows here -->
+                </tbody>
             </table>
         </div>
     </div>
-
     <script>
         // 1. Fetch Real-Time Data from Server
         async function loadDashboardData() {
@@ -318,77 +318,7 @@ function changeFilter(timeframe) {
     loadDashboardData();
 }
 // Function to toggle between Dashboard view and Members view
-function switchView(viewId, tabId) {
-    // 1. Hide both views
-    document.getElementById('overview-view').style.display = 'none';
-    document.getElementById('members-view').style.display = 'none';
-    
-    // 2. Show the one that was clicked
-    document.getElementById(viewId).style.display = 'block';
-    
-    // 3. Remove dark highlight from all sidebar tabs
-    document.querySelectorAll('.sidebar-menu li').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    // Add highlight to the selected tab
-    document.getElementById(tabId).classList.add('active');
-    
-    // 4. If they clicked Members, load the full user list from the database
-    if (viewId === 'members-view') {
-        loadAllMembers();
-    }
-}
-
-// Function to fetch every single user from the database
-async function loadAllMembers() {
-    try {
-        const response = await fetch('https://gym-website-29il.onrender.com/api/all-users');
-        const users = await response.json();
-        
-        const tableBody = document.getElementById('all-members-table-body');
-        tableBody.innerHTML = ''; // Clear out old rows
-        
-        users.forEach(user => {
-            const row = document.createElement('tr');
-            row.style.borderBottom = '1px solid #eee';
-            
-            const planName = user.plan === 'pro' ? 'Pro Membership ($50)' : 'Free Tier ($0)';
-            
-            row.innerHTML = `
-                <td style="padding: 12px; font-weight: 500;">${user.username}</td>
-                <td style="padding: 12px;">${planName}</td>
-                <td style="padding: 12px;"><span class="status-active" style="background: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span></td>
-            `;
-            tableBody.appendChild(row);
-        });
-    } catch (error) {
-        console.error("Error loading full member directory:", error);
-    }
-}
-        // 2. Simulate sending a notification
-        function sendNotification() {
-            const btn = document.querySelector('.notify-btn');
-            const totalMembers = document.getElementById('stat-members').innerText;
-            
-            if(totalMembers === "0" || totalMembers === "Offline") {
-                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No members yet';
-                btn.style.background = '#e74c3c';
-            } else {
-                btn.innerHTML = `<i class="fas fa-check"></i> Sent to ${totalMembers} members!`;
-                btn.style.background = '#27ae60'; // Change to green
-            }
-            
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-bolt"></i> Send Now';
-                btn.style.background = 'linear-gradient(to right, #ff4b2b, #ff416c)'; // Revert to red
-            }, 3000);
-        }
-
-        // 3. Log out function
-        function logout() {
-            window.location.href = 'index.html';
-        }
-        //  4. Switches screens when clicking the sidebar tabs
+// Function to toggle between Dashboard view and Members view
 function switchView(viewId, tabId) {
     document.getElementById('overview-view').style.display = 'none';
     document.getElementById('members-view').style.display = 'none';
@@ -405,7 +335,7 @@ function switchView(viewId, tabId) {
     }
 }
 
-// Fetches every registered user from your server database
+// Fetches every registered user from your database and adds the Sign Up Date
 async function loadAllMembers() {
     try {
         const response = await fetch('https://gym-website-29il.onrender.com/api/all-users');
@@ -416,19 +346,47 @@ async function loadAllMembers() {
         
         users.forEach(user => {
             const row = document.createElement('tr');
-            row.style.borderBottom = '1px solid #eee';
+            row.style.borderBottom = '1px solid #f0f4f8';
+            row.style.height = '50px';
+            
             const planName = user.plan === 'pro' ? 'Pro Membership ($50)' : 'Free Tier ($0)';
+            const signUpDate = user.joinDate || 'July 1, 2026';
             
             row.innerHTML = `
-                <td style="padding: 12px; font-weight: 500; color: #333;">${user.username}</td>
-                <td style="padding: 12px; color: #666;">${planName}</td>
-                <td style="padding: 12px;"><span style="background: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Active</span></td>
+                <td style="padding: 12px; font-weight: 500; color: #2d3748;">${user.username}</td>
+                <td style="padding: 12px; color: #718096;">${planName}</td>
+                <td style="padding: 12px; color: #718096;">${signUpDate}</td>
+                <td style="padding: 12px;"><span style="background: #e6f4ea; color: #137333; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;">Active</span></td>
             `;
             tableBody.appendChild(row);
         });
     } catch (error) {
         console.error("Error loading member directory:", error);
     }
+}
+
+// Simulate sending a motivation blast notification
+function sendNotification() {
+    const btn = document.querySelector('.notify-btn');
+    const totalMembers = document.getElementById('stat-members').innerText;
+
+    if (totalMembers === "0" || totalMembers === "Offline") {
+        btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> No members to blast!';
+        btn.style.background = '#e74c3c';
+    } else {
+        btn.innerHTML = `<i class="fas fa-check"></i> Sent to ${totalMembers} members!`;
+        btn.style.background = '#27ae60';
+    }
+
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Now';
+        btn.style.background = 'linear-gradient(to right, #ff4b2b, #ff416c)';
+    }, 3000);
+}
+
+// Log out function
+function logout() {
+    window.location.href = 'index.html';
 }
     </script>
 </body>
