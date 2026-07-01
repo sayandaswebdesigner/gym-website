@@ -166,6 +166,8 @@
             <li><i class="fas fa-bell"></i> Notifications</li>
             <li><i class="fas fa-cog"></i> Settings</li>
         </ul>
+        <li id="tab-dashboard" class="active" onclick="switchView('overview-view', 'tab-dashboard')" style="cursor: pointer;"><i class="fas fa-home"></i> Dashboard</li>
+<li id="tab-members" onclick="switchView('members-view', 'tab-members')" style="cursor: pointer;"><i class="fas fa-users"></i> Members</li>
         <div class="logout-btn" onclick="logout()">
             <i class="fas fa-sign-out-alt"></i> Log Out
         </div>
@@ -173,12 +175,19 @@
 
     <div class="main-content">
         <header>
-            <h1>Overview</h1>
             <div class="user-profile">
                 <i class="fas fa-user-circle"></i> Owner Admin
             </div>
         </header>
-
+        <div id="overview-view" class="view-section"></div>
+<div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="margin: 0; font-size: 24px; color: #333;">Overview</h2>
+    <div class="filter-buttons">
+        <button class="filter-btn active" onclick="changeFilter('24h')" style="padding: 8px 16px; margin-left: 8px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer; font-weight: 600;">24 Hours</button>
+        <button class="filter-btn" onclick="changeFilter('1w')" style="padding: 8px 16px; margin-left: 8px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer;">1 Week</button>
+        <button class="filter-btn" onclick="changeFilter('1m')" style="padding: 8px 16px; margin-left: 8px; border: 1px solid #ddd; border-radius: 6px; background: #fff; cursor: pointer;">1 Month</button>
+    </div>
+</div>
         <div class="dashboard-cards">
             <div class="card">
                 <div class="card-info">
@@ -230,6 +239,22 @@
             </div>
         </div>
     </div>
+    </div> <div id="members-view" class="view-section" style="display: none; padding: 20px;">
+        <h2 style="margin-bottom: 20px; color: #333;">All Registered Members</h2>
+        <div style="background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #eee;">
+                        <th style="padding: 12px; color: #666;">Username</th>
+                        <th style="padding: 12px; color: #666;">Selected Plan</th>
+                        <th style="padding: 12px; color: #666;">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="all-members-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
         // 1. Fetch Real-Time Data from Server
@@ -270,7 +295,75 @@
 
         // Run the fetch function automatically when the page loads
         window.onload = loadDashboardData;
+        // Function to handle clicking on different timeframe buttons
+function changeFilter(timeframe) {
+    currentFilter = timeframe;
+    
+    // 1. Clear active styles from all buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.style.background = '#fff';
+        btn.style.color = '#333';
+        btn.style.fontWeight = 'normal';
+    });
+    
+    // 2. Highlight the clicked button in your red theme color
+    if (event && event.target) {
+        event.target.style.background = '#ff4b2b';
+        event.target.style.color = '#fff';
+        event.target.style.fontWeight = '600';
+    }
+    
+    // 3. Reload your data from the server
+    loadDashboardData();
+}
+// Function to toggle between Dashboard view and Members view
+function switchView(viewId, tabId) {
+    // 1. Hide both views
+    document.getElementById('overview-view').style.display = 'none';
+    document.getElementById('members-view').style.display = 'none';
+    
+    // 2. Show the one that was clicked
+    document.getElementById(viewId).style.display = 'block';
+    
+    // 3. Remove dark highlight from all sidebar tabs
+    document.querySelectorAll('.sidebar-menu li').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    // Add highlight to the selected tab
+    document.getElementById(tabId).classList.add('active');
+    
+    // 4. If they clicked Members, load the full user list from the database
+    if (viewId === 'members-view') {
+        loadAllMembers();
+    }
+}
 
+// Function to fetch every single user from the database
+async function loadAllMembers() {
+    try {
+        const response = await fetch('https://gym-website-29il.onrender.com/api/all-users');
+        const users = await response.json();
+        
+        const tableBody = document.getElementById('all-members-table-body');
+        tableBody.innerHTML = ''; // Clear out old rows
+        
+        users.forEach(user => {
+            const row = document.createElement('tr');
+            row.style.borderBottom = '1px solid #eee';
+            
+            const planName = user.plan === 'pro' ? 'Pro Membership ($50)' : 'Free Tier ($0)';
+            
+            row.innerHTML = `
+                <td style="padding: 12px; font-weight: 500;">${user.username}</td>
+                <td style="padding: 12px;">${planName}</td>
+                <td style="padding: 12px;"><span class="status-active" style="background: #e6f4ea; color: #137333; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Active</span></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Error loading full member directory:", error);
+    }
+}
         // 2. Simulate sending a notification
         function sendNotification() {
             const btn = document.querySelector('.notify-btn');
