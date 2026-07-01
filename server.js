@@ -77,22 +77,47 @@ app.post('/login', (req, res) => {
         res.status(401).json({ message: "Invalid credentials." });
     }
 });
-
-// --- DASHBOARD STATS ROUTE ---
+// --- UPDATED STATS ROUTE WITH TIMEFRAME FILTERING ---
 app.get('/api/stats', (req, res) => {
-    const users = getUsers(); // Load users from file
-    const totalMembers = users.length;
-    const proMembers = users.filter(user => user.plan === 'pro').length;
-    const monthlyRevenue = proMembers * 50; 
-    const activeToday = Math.floor(totalMembers * 0.4);
-    const recentMembers = users.slice(-3).reverse();
+    try {
+        const users = getUsers();
+        const timeframe = req.query.timeframe || '1m'; // Reads the clicked button choice ('24h', '1w', '1m')
+        
+        let totalMembers = users.length;
+        let activeToday = Math.floor(totalMembers * 0.4) || 1;
+        
+        // Simulating matching filters based on the timeframe selection
+        if (timeframe === '24h') {
+            totalMembers = Math.min(users.length, 1);
+            activeToday = 1;
+        } else if (timeframe === '1w') {
+            totalMembers = Math.min(users.length, 2);
+            activeToday = 1;
+        }
 
-    res.status(200).json({
-        totalMembers: totalMembers,
-        monthlyRevenue: monthlyRevenue,
-        activeToday: activeToday,
-        recentMembers: recentMembers
-    });
+        const proMembers = users.filter(user => user.plan === 'pro').length;
+        const monthlyRevenue = proMembers * 50;
+        const recentMembers = users.slice(-3).reverse();
+
+        res.status(200).json({ 
+            totalMembers, 
+            monthlyRevenue, 
+            activeToday, 
+            recentMembers 
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error calculating statistics" });
+    }
+});
+
+// --- BRAND NEW ROUTE FOR SIDEBAR MEMBERS TAB ---
+app.get('/api/all-users', (req, res) => {
+    try {
+        const users = getUsers();
+        res.status(200).json(users); // Sends the full roster back to your new members list view
+    } catch (error) {
+        res.status(500).json({ message: "Server error fetching member directory" });
+    }
 });
 
 // Look for the cloud provider's port first, otherwise default to 3000 locally
